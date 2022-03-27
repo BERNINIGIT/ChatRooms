@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ChatRooms.ChatBot.Consumer": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
