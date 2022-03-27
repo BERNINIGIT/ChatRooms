@@ -9,9 +9,9 @@ namespace ChatRooms.Core.Services.Implementations
 {
     public class FileProcessor : IFileProcessor
     {
-        private readonly ILogger<FileProcessor> _logger;
+        private readonly ILogger<IFileProcessor> _logger;
 
-        public FileProcessor(ILogger<FileProcessor> logger)
+        public FileProcessor(ILogger<IFileProcessor> logger)
         {
             _logger = logger;
         }

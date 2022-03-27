@@ -1,54 +1,80 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
+import authService from '../../../src/components/api-authorization/AuthorizeService';
 
-const ChatInput = (props) => {
-    const [user, setUser] = useState('');
-    const [message, setMessage] = useState('');
+export class ChatInput extends Component {
+    constructor(props) {
+        super(props);
 
-    const onSubmit = (e) => {
+        this.state = {
+            isAuthenticated: false,
+            message : ''
+        }
+    }
+    componentDidMount() {
+        this._subscription = authService.subscribe(() => this.populateState());
+        this.populateState();
+    }
+
+    componentWillUnmount() {
+        authService.unsubscribe(this._subscription);
+    }
+
+    async populateState() {
+        const [isAuthenticated] = await Promise.all([authService.isAuthenticated()]);
+        this.setState({
+            isAuthenticated
+        });
+    }
+
+    
+
+    onSubmit = (e) => {
         e.preventDefault();
 
-        const isUserProvided = user && user !== '';
-        const isMessageProvided = message && message !== '';
+        const isMessageProvided = this.state.message && this.state.message !== '';
 
-        if (isUserProvided && isMessageProvided) {
-            props.sendMessage(user, message);
-        } 
+        if (isMessageProvided) {
+            this.props.sendMessage(this.state.message);
+        }
         else {
-            alert('Please insert an user and a message.');
+            alert('Please provide a message to send.');
         }
     }
 
-    const onUserUpdate = (e) => {
-        setUser(e.target.value);
+    onMessageUpdate = (e) => {
+        //setMessage(e.target.value);
+        this.setState({
+            message: e.target.value
+        });
+    }
+    render() {
+        const { isAuthenticated} = this.state;
+        if (!isAuthenticated) {
+            return this.anonymousView();
+        } else {
+            return this.authenticatedView();
+        }
     }
 
-    const onMessageUpdate = (e) => {
-        setMessage(e.target.value);
+    authenticatedView() {
+        return (
+            <form
+                onSubmit={this.onSubmit}>
+                <label htmlFor="message">Message:</label>
+                <br />
+                <input
+                    type="text"
+                    id="message"
+                    name="message"
+                    value={this.state.message}
+                    onChange={this.onMessageUpdate} />
+                <br /><br />
+                <button>Submit</button>
+            </form>
+            );
     }
 
-    return (
-        <form 
-            onSubmit={onSubmit}>
-            <label htmlFor="user">User:</label>
-            <br />
-            <input 
-                id="user" 
-                name="user" 
-                value={user}
-                onChange={onUserUpdate} />
-            <br/>
-            <label htmlFor="message">Message:</label>
-            <br />
-            <input 
-                type="text"
-                id="message"
-                name="message" 
-                value={message}
-                onChange={onMessageUpdate} />
-            <br/><br/>
-            <button>Submit</button>
-        </form>
-    )
-};
-
-export default ChatInput;
+    anonymousView() {
+        return (<span>Please log in to send messages</span>);
+    }
+}

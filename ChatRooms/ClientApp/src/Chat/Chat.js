@@ -3,7 +3,7 @@ import { HubConnectionBuilder } from '@microsoft/signalr';
 import authService from '../../src/components/api-authorization/AuthorizeService';
 
 import ChatWindow from './ChatWindow/ChatWindow';
-import ChatInput from './ChatInput/ChatInput';
+import { ChatInput } from './ChatInput/ChatInput';
 
 const Chat = () => {
     const [ chat, setChat ] = useState([]);
@@ -23,6 +23,8 @@ const Chat = () => {
 
                 connection.on('ReceiveMessage', message => {
                     const updatedChat = [...latestChat.current];
+                    if (updatedChat.length >= 10)
+                        updatedChat.shift();
                     updatedChat.push(message);
                 
                     setChat(updatedChat);
@@ -31,10 +33,9 @@ const Chat = () => {
             .catch(e => console.log('Connection failed: ', e));
     }, []);
 
-    const sendMessage = async (user, message) => {
+    const sendMessage = async (messageInput) => {
         const chatMessage = {
-            user: user,
-            message: message
+            message: messageInput
         };
 
         try {
