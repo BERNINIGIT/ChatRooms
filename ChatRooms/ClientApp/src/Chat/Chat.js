@@ -23,7 +23,7 @@ const Chat = () => {
 
                 connection.on('ReceiveMessage', message => {
                     const updatedChat = [...latestChat.current];
-                    if (updatedChat.length >= 10)
+                    if (updatedChat.length >= 50) //50 messages max
                         updatedChat.shift();
                     updatedChat.push(message);
                 
