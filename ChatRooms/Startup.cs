@@ -111,10 +111,6 @@ namespace ChatRooms
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-            //app.UseEndpoints(route =>
-            //{
-            //    route.MapHub<ChatHub>("/chatHub");
-            //});
         }
     }
 }
